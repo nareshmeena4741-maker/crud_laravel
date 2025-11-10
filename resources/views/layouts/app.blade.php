@@ -2,36 +2,44 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Tournament App</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* simple small style for bracket columns */
-    .round-column { min-width:220px; }
-    .match-box { border:1px solid #ddd; padding:8px; margin-bottom:8px; background:#fff; }
-  </style>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>@yield('title','MyApp')</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="p-4">
-<div class="container">
-  <h2 class="mb-3">Tournament App</h2>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url('/') }}">MyApp</a>
 
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        @auth
+          <li class="nav-item"><span class="nav-link">Hi, {{ auth()->user()->name }}</span></li>
+          <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button class="btn btn-sm btn-outline-secondary" type="submit">Logout</button>
+            </form>
+          </li>
+        @else
+          <li class="nav-item"><a class="nav-link" href="{{ route('login.form') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('register.form') }}">Register</a></li>
+        @endauth
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
   @if(session('success'))
-      <div class="alert alert-success alert-message">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
   @endif
   @if(session('error'))
-      <div class="alert alert-danger alert-message">{{ session('error') }}</div>
+    <div class="alert alert-danger">{{ session('error') }}</div>
   @endif
 
   @yield('content')
 </div>
 
-<script>
-  $(document).ready(function(){
-      // Hide success/error alert after 3 seconds smoothly
-      setTimeout(function(){
-          $(".alert-message").fadeOut('slow');
-      }, 3000);
-  });
-</script>
 </body>
 </html>

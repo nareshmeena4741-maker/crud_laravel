@@ -3,8 +3,48 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StaffController;
 
-Route::get('/', [TournamentController::class,'index'])->name('tournaments.index');
+// Route::get('/', [TournamentController::class,'index'])->name('tournaments.index');
+
+
+// Home redirect
+Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()->isAdmin()) return redirect()->route('admin.dashboard');
+        return redirect()->route('staff.dashboard');
+    }
+    return redirect()->route('login.form');
+});
+
+// Auth
+Route::get('/login', [AuthController::class,'showLoginForm'])->name('login.form');
+Route::post('/login', [AuthController::class,'login'])->name('login');
+Route::post('/logout', [AuthController::class,'logout'])->name('logout');
+
+// Register (public - creates staff)
+Route::get('/register', [AuthController::class,'showRegisterForm'])->name('register.form');
+Route::post('/register', [AuthController::class,'register'])->name('register');
+
+// Admin group
+Route::group(['prefix'=>'admin','middleware'=>['auth','role:admin']], function () {
+    Route::get('dashboard', [AdminController::class,'dashboard'])->name('admin.dashboard');
+    Route::get('user/create', [AdminController::class,'createUserForm'])->name('admin.user.create');
+    Route::post('user/store', [AdminController::class,'storeUser'])->name('admin.user.store');
+    Route::post('user/{id}/toggle', [AdminController::class,'toggleActive'])->name('admin.user.toggle');
+});
+
+// Staff group
+Route::group(['prefix'=>'staff','middleware'=>['auth','role:staff']], function () {
+    Route::get('dashboard', [StaffController::class,'dashboard'])->name('staff.dashboard');
+});
+
+
+
+
+
 
 // Tournament CRUD
 Route::get('/tournaments', [TournamentController::class,'index'])->name('tournaments.index');
