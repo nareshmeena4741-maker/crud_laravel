@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\UserDocument;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'profile_image'
 
     ];
 
@@ -52,7 +54,7 @@ class User extends Authenticatable
         ];
     }
 
-       public function isAdmin(): bool
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
@@ -62,4 +64,8 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
+    public function documents()
+    {
+        return $this->hasMany(UserDocument::class, 'user_id');
+    }
 }

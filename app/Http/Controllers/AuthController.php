@@ -6,16 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Tournament;
 
 class AuthController extends Controller
 {
-    // show login form
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // login action
     public function login(Request $request)
     {
         $request->validate([
@@ -45,34 +44,32 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    // show register form (public register -> staff role)
     public function showRegisterForm()
     {
         return view('auth.register');
     }
 
-    // register action (creates staff by default)
+
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email'=> 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'name'                  => 'required|string|max:50',
+            'email'                 => 'required|email|unique:users,email',
+            'password'              => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email'=> $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'staff',
-            'is_active' => true,
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'is_active' => 1,
+            'role'      => 'staff',
         ]);
 
-        Auth::login($user);
-        return redirect()->route('staff.dashboard')->with('success','Registration successful.');
+        return redirect()->route('login.form')
+            ->with('success', 'Registration successful. Please login.');
     }
 
-    // logout
     public function logout(Request $request)
     {
         Auth::logout();

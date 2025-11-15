@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['admin', 'staff'])->default('staff');
             $table->boolean('is_active')->default(true);
+            $table->string('profile_image')->nullable();
 
             $table->rememberToken();
             $table->timestamps();

@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    /**
-     * Usage: ->middleware('role:admin') or ->middleware('role:admin|staff')
-     */
+
     public function handle(Request $request, Closure $next, $roles)
     {
         if (! Auth::check()) {
