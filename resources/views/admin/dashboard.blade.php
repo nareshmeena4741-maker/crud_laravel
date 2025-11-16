@@ -9,6 +9,25 @@
     </div>
 
     <h5>Staff List</h5>
+
+
+
+
+
+
+
+    <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-3" style="max-width: 300px;">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search staff..."
+                value="{{ request('search') }}">
+            <button class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+
+
+
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -68,7 +87,29 @@
                 </tr>
             @endforeach
         </tbody>
+
     </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="mt-3">
+        {{ $staff->links() }}
+    </div>
+
+
+
+
+
 
 
     @foreach ($staff as $s)

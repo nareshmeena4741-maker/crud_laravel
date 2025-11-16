@@ -10,11 +10,33 @@ use App\Jobs\SendUserCredentialJob;
 
 class AdminController extends Controller
 {
-    public function dashboard()
+    // public function dashboard()
+    // {
+    //     $staff = User::with('documents')->where('role', 'staff')->get();
+    //     // dd($staff);
+    //     return view('admin.dashboard', compact('staff'));
+    // }
+
+
+    public function dashboard(Request $request)
     {
-        $staff = User::with('documents')->where('role', 'staff')->get();
-        // dd($staff);
-        return view('admin.dashboard', compact('staff'));
+        $search = $request->input('search');
+
+        $staffQuery = User::with('documents')
+            ->where('role', 'staff')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            })
+            ->select('id', 'name', 'email', 'phone', 'role', 'is_active', 'profile_image')
+            ->orderBy('id', 'DESC');
+
+        $staff = $staffQuery->paginate(5)->withQueryString();
+
+        return view('admin.dashboard', compact('staff', 'search'));
     }
 
     public function createUserForm()
@@ -65,7 +87,6 @@ class AdminController extends Controller
             }
 
             SendUserCredentialJob::dispatch($user, $request->password);
-
 
             DB::commit();
 
